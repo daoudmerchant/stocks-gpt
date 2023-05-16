@@ -1,4 +1,4 @@
-interface StockHistoryTick {
+declare interface StockHistoryTick {
   v: number; // The trading volume of the symbol in the given time period.
   vw: number; // The volume weighted average price.
   o: number; // The open price for the symbol in the given time period.
