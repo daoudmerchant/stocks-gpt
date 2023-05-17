@@ -1,22 +1,12 @@
-import { ChatGPTQuery, StockEvent } from "../../models/ChatGPTQuery.model";
+import { LLMQuery } from "../../models/LLMQuery.model";
 import StocksService from "../../services/stocks";
 
-const STOCK_EVENT_MAP: { [K in keyof StockHistoryTick]?: string } = {
-  v: "trading volume",
-  vw: "volume weighted average price",
-  o: "open price",
-  c: "close price",
-  h: "highest price",
-  l: "lowest price",
-  n: "number of transactions in the aggregate window",
-};
-
 interface StocksControllerArguments {
-  stocksService: StockService;
+  stocksService: Stock.StockService;
 }
 
 class StocksController {
-  private stocksService: StockService;
+  private stocksService: Stock.StockService;
   constructor({ stocksService }: StocksControllerArguments) {
     this.stocksService = stocksService;
   }
@@ -32,22 +22,24 @@ class StocksController {
       from: this.getFormattedDate(-1),
       to: this.getFormattedDate(),
     });
-    if (latestHistory !== undefined) {
+
+    if (latestHistory.status === "OK" || latestHistory.status === "DELAYED") {
       // await this.dbService.saveHistory(latestHistory);
-      return new ChatGPTQuery({
+      return new LLMQuery({
         ticker: "AAPL",
         topic: "stock history activity",
       })
         .pushActivity(latestHistory.results)
         .getQuery();
     }
+
     // if (existingHistory.date === yesterday) {
     //   return existingHistory;
     // }
     // TODO handle doesn't exist
   }
 
-  private getFormattedDate(relativeYears?: number = 0): string {
+  private getFormattedDate(relativeYears: number = 0): string {
     const date = new Date();
     date.setFullYear(date.getFullYear() + relativeYears);
     return date.toLocaleDateString("fr-CA");

@@ -8,5 +8,24 @@ describe("Utils", () => {
         expect(isISO8601Date(dateString)).toBe(true)
       );
     });
+    describe("returns false for an incorrect ISO8601 date", () => {
+      test("Not a date", () => {
+        expect(isISO8601Date("I love cheesecake")).toBe(false);
+      });
+      test("Not the right order", () => {
+        expect(isISO8601Date("19-01-2022")).toBe(false);
+      });
+      test("Not hyphenated", () => {
+        expect(isISO8601Date("2022/01/19")).toBe(false);
+      });
+      test("Not to correct number of digits", () => {
+        expect(isISO8601Date("2022-1-19")).toBe(false);
+      });
+      test("Invalid date", () => {
+        expect(isISO8601Date("2122-01-19")).toBe(false);
+        expect(isISO8601Date("2022-13-19")).toBe(false);
+        expect(isISO8601Date("2022-01-91")).toBe(false);
+      });
+    });
   });
 });

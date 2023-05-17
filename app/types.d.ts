@@ -16,7 +16,7 @@ declare namespace Stock {
     resultsCount: number;
     adjusted: boolean;
     results: StockHistoryTick[];
-    status: "OK"; // TODO add other response statuses
+    status: "OK" | "DELAYED" | "ERROR"; // TODO add other response statuses
     request_id: string;
     count: number;
   }

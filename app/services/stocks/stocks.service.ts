@@ -15,7 +15,7 @@ export class StocksService implements Stock.StockService {
     }
     return timeout(
       fetch(
-        `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/year/${from}/${to}?apiKey=${process.env.POLYGON_API_KEY}`
+        `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${process.env.POLYGON_API_KEY}`
       ).then((res) => res.json()),
       5000
     );
