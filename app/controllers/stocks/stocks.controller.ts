@@ -27,7 +27,11 @@ class StocksController {
     //   TODO handle non-existant / from yesterday
     //   return existingHistory;
     // }
-    const latestHistory = await this.stocksService.getHistory(ticker);
+    const latestHistory = await this.stocksService.getHistory({
+      ticker,
+      from: this.getFormattedDate(-1),
+      to: this.getFormattedDate(),
+    });
     if (latestHistory !== undefined) {
       // await this.dbService.saveHistory(latestHistory);
       return new ChatGPTQuery({
@@ -41,6 +45,12 @@ class StocksController {
     //   return existingHistory;
     // }
     // TODO handle doesn't exist
+  }
+
+  private getFormattedDate(relativeYears?: number = 0): string {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + relativeYears);
+    return date.toLocaleDateString("fr-CA");
   }
 }
 

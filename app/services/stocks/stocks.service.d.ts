@@ -20,6 +20,16 @@ declare interface StockHistoryResponse {
   count: number;
 }
 
+declare interface GetHistoryArguments {
+  ticker: string;
+  from: string;
+  to: string;
+}
+
 declare class StockService {
-  async getHistory(ticker: string): Promise<StockHistoryResponse>;
+  async getHistory({
+    ticker,
+    from,
+    to,
+  }: GetHistoryArguments): Promise<StockHistoryResponse>;
 }

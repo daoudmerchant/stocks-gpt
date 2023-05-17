@@ -5,8 +5,8 @@ import path from "path";
 export const MOCK_TICKER = "AAPL";
 
 export class MockStocksService implements StockService {
-  async getHistory(ticker: string): Promise<StockHistoryResponse> {
-    if (ticker !== MOCK_TICKER) {
+  async getHistory(args: GetHistoryArguments): Promise<StockHistoryResponse> {
+    if (args.ticker !== MOCK_TICKER) {
       throw new Error("Unknown ticker - not implemented");
     }
     return fs
