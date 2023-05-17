@@ -1,7 +1,3 @@
-export type TimeoutRejection = {
-  status: "TIMEOUT";
-};
-
 const getRejectingPromise = (ms: number): Promise<TimeoutRejection> =>
   new Promise((_, rej) => setTimeout(() => rej({ status: "TIMEOUT" }), ms));
 
@@ -10,3 +6,12 @@ export const timeout = async <T>(
   ms: number
 ): Promise<T | TimeoutRejection> =>
   Promise.race([promise, getRejectingPromise(ms)]);
+
+export const isISO8601Date = (dateString: string): boolean =>
+  new RegExp(
+    [
+      "^20\\d{2}-",
+      "(01|02|03|04|05|06|07|08|09|10|11|12)-",
+      "(01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)$",
+    ].join("")
+  ).test(dateString);

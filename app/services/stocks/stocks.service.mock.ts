@@ -1,11 +1,14 @@
-/// <reference path="stocks.service.d.ts" />
+/// <reference path="../../types.d.ts" />
+
 import fs from "fs/promises";
 import path from "path";
 
 export const MOCK_TICKER = "AAPL";
 
-export class MockStocksService implements StockService {
-  async getHistory(args: GetHistoryArguments): Promise<StockHistoryResponse> {
+export class MockStocksService implements Stock.StockService {
+  async getHistory(
+    args: Stock.GetHistoryArguments
+  ): Promise<Stock.StockHistoryResponse> {
     if (args.ticker !== MOCK_TICKER) {
       throw new Error("Unknown ticker - not implemented");
     }
