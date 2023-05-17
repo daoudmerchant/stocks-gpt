@@ -10,15 +10,39 @@ declare namespace Stock {
     n: number; // The number of transactions in the aggregate window.
   }
 
+  declare type ResponseStatus = "OK" | "DELAYED" | "ERROR"; // TODO add other response statuses
+
   declare interface StockHistoryResponse {
     ticker: string;
     queryCount: number;
     resultsCount: number;
     adjusted: boolean;
     results: StockHistoryTick[];
-    status: "OK" | "DELAYED" | "ERROR"; // TODO add other response statuses
+    status: ResponseStatus;
     request_id: string;
-    count: number;
+    count?: number;
+  }
+
+  declare interface StockSummary {
+    ticker: string;
+    name: string;
+    market: string;
+    locale: string;
+    primary_exchange: string;
+    type: string;
+    active: boolean;
+    currency_name: string;
+    cik: string;
+    composite_figi: string;
+    share_class_figi: string;
+    last_updated_utc: string;
+  }
+
+  declare interface StockSearchResponse {
+    results: StockSummary[];
+    status: ResponseStatus;
+    request_id: string;
+    count?: number;
   }
 
   declare interface GetHistoryArguments {
@@ -33,6 +57,7 @@ declare namespace Stock {
       from,
       to,
     }: GetHistoryArguments): Promise<StockHistoryResponse | TimeoutRejection>;
+    search(searchTerm: string): Promise<StockSearchResponse | TimeoutRejection>;
   }
 }
 
