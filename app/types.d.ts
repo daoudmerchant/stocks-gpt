@@ -55,7 +55,7 @@ declare namespace Stock {
     to: string;
   }
 
-  declare class StockService {
+  declare class BaseStocksService {
     getHistory({
       ticker,
       from,
@@ -78,9 +78,9 @@ declare namespace Database {
     string: string;
   }
 
-  declare const SUCCESS = { status: "SUCCESS" } as const;
+  declare type Success = { status: "SUCCESS" };
 
-  declare class DatabaseService {
+  declare class BaseDatabaseService {
     getStock({
       ticker,
       type,
@@ -90,6 +90,6 @@ declare namespace Database {
       ticker,
       type,
       string,
-    }: StockDatabaseArguments): Promise<typeof SUCCESS | TimeoutError>;
+    }: StockDatabaseArguments): Promise<Success | TimeoutError>;
   }
 }

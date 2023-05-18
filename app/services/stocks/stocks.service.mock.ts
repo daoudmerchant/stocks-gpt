@@ -24,7 +24,7 @@ const NON_EXISTENT_SEARCH_RESPONSE = {
   request_id: "9e0a89bc3ff1a117da7768170ddfa3c7",
 };
 
-export class MockStocksService implements Stock.StockService {
+export class MockStocksService implements Stock.BaseStocksService {
   async getHistory({
     ticker,
   }: Stock.GetHistoryArguments): Promise<Stock.StockHistoryResponse> {
@@ -32,7 +32,7 @@ export class MockStocksService implements Stock.StockService {
       return getNonExistentHistoryResponse(ticker);
     }
     return fs
-      .readFile(path.resolve(__dirname, "./aapl-sample-response.json"))
+      .readFile(path.resolve(__dirname, "./aapl-history-sample-response.json"))
       .then((buffer) => JSON.parse(buffer.toString()));
   }
   async search(searchTerm: string): Promise<Stock.StockSearchResponse> {
@@ -40,7 +40,7 @@ export class MockStocksService implements Stock.StockService {
       return NON_EXISTENT_SEARCH_RESPONSE;
     }
     return fs
-      .readFile(path.resolve(__dirname, "./aapl-history-response.json"))
+      .readFile(path.resolve(__dirname, "./aapl-summary-sample-response.json"))
       .then((buffer) => JSON.parse(buffer.toString()));
   }
 }

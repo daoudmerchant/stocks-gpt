@@ -2,11 +2,11 @@ import { LLMQuery } from "../../models/LLMQuery.model";
 import StocksService from "../../services/stocks";
 
 interface StocksControllerArguments {
-  stocksService: Stock.StockService;
+  stocksService: Stock.BaseStocksService;
 }
 
 class StocksController {
-  private stocksService: Stock.StockService;
+  private stocksService: Stock.BaseStocksService;
   constructor({ stocksService }: StocksControllerArguments) {
     this.stocksService = stocksService;
   }

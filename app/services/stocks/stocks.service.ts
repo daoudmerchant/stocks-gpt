@@ -1,8 +1,9 @@
 /// <reference path="../../types.d.ts" />
 
+import { AppConfig } from "../../../app/config";
 import { isISO8601Date, timeout } from "../../utils";
 
-export class StocksService implements Stock.StockService {
+export class StocksService implements Stock.BaseStocksService {
   async getHistory({
     ticker,
     from,
@@ -17,7 +18,7 @@ export class StocksService implements Stock.StockService {
       fetch(
         `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${process.env.POLYGON_API_KEY}`
       ).then((res) => res.json()),
-      5000 // TODO put magic number in config
+      AppConfig.timeout
     );
   }
   async search(
@@ -27,7 +28,7 @@ export class StocksService implements Stock.StockService {
       fetch(
         `https://api.polygon.io/v3/reference/tickers?search=${searchTerm}&active=true&apiKey=${process.env.POLYGON_API_KEY}`
       ).then((res) => res.json()),
-      5000 // TODO put magic number in config
+      AppConfig.timeout
     );
   }
 }
