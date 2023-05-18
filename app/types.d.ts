@@ -1,3 +1,7 @@
+declare class TimeoutError extends Error {
+  status: "TIMEOUT";
+}
+
 declare namespace Stock {
   declare interface StockHistoryTick {
     v: number; // The trading volume of the symbol in the given time period.
@@ -56,11 +60,44 @@ declare namespace Stock {
       ticker,
       from,
       to,
-    }: GetHistoryArguments): Promise<StockHistoryResponse | TimeoutRejection>;
-    search(searchTerm: string): Promise<StockSearchResponse | TimeoutRejection>;
+    }: GetHistoryArguments): Promise<
+      StockHistoryResponse | typeof TIMEOUT_REJECTION
+    >;
+    search(
+      searchTerm: string
+    ): Promise<StockSearchResponse | typeof TIMEOUT_REJECTION>;
   }
 }
 
-declare type TimeoutRejection = {
-  status: "TIMEOUT";
-};
+declare namespace Database {
+  declare interface StockInsightsResponse {
+    ticker: string;
+    string: string;
+    timestamp: number;
+  }
+
+  declare interface StockDatabaseArguments {
+    ticker: string;
+    type: "INSIGHTS"; // TODO add more!
+    string: string;
+  }
+
+  declare const SUCCESS = { status: "SUCCESS" } as const;
+
+  declare class DatabaseService {
+    getStock({
+      ticker,
+      type,
+      string,
+    }: StockDatabaseArguments): Promise<
+      StockInsightsResponse | typeof TIMEOUT_REJECTION
+    >;
+    saveStock({
+      ticker,
+      type,
+      string,
+    }: StockDatabaseArguments): Promise<
+      typeof SUCCESS | typeof TIMEOUT_REJECTION
+    >;
+  }
+}

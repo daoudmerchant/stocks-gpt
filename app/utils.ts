@@ -1,23 +1,23 @@
-const getRejectingPromise = (ms: number): Promise<TimeoutRejection> =>
-  new Promise((_, rej) => setTimeout(() => rej({ status: "TIMEOUT" }), ms));
-
 export const timeout = async <T>(
   promise: Promise<T>,
   ms: number
-): Promise<T | TimeoutRejection | unknown> => {
+): Promise<T | TimeoutError> => {
   let timeoutID;
   try {
     const result = Promise.race([
       promise,
       new Promise((_, rej) => {
-        timeoutID = setTimeout(() => rej({ status: "TIMEOUT" }), ms);
+        timeoutID = setTimeout(() => rej(TimeoutError), ms);
       }),
     ]);
     clearTimeout(timeoutID);
-    return result as TimeoutRejection | T;
+    return result as T;
   } catch (e: unknown) {
     clearTimeout(timeoutID);
-    return e;
+    if (e instanceof TimeoutError) {
+      return e;
+    }
+    throw e;
   }
 };
 

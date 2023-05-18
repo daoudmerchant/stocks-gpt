@@ -8,7 +8,7 @@ export class StocksService implements Stock.StockService {
     from,
     to,
   }: Stock.GetHistoryArguments): Promise<
-    Stock.StockHistoryResponse | TimeoutRejection
+    Stock.StockHistoryResponse | TimeoutError
   > {
     if ([from, to].some((dateString) => !isISO8601Date(dateString))) {
       throw new Error("Invalid date - must be YYYY-MM-DD");
@@ -22,7 +22,7 @@ export class StocksService implements Stock.StockService {
   }
   async search(
     searchTerm: string
-  ): Promise<Stock.StockSearchResponse | TimeoutRejection> {
+  ): Promise<Stock.StockSearchResponse | TimeoutError> {
     return timeout(
       fetch(
         `https://api.polygon.io/v3/reference/tickers?search=${searchTerm}&active=true&apiKey=${process.env.POLYGON_API_KEY}`

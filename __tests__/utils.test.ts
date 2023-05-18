@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test } from "@jest/globals";
 import { isISO8601Date, timeout } from "../app/utils";
+import { TimeoutError } from "../app/models/TimeoutError.model";
 
 describe("Utils", () => {
   describe("isISO8601Date()", () => {
@@ -28,46 +29,46 @@ describe("Utils", () => {
       });
     });
   });
-});
 
-const TIMEOUT_TEST_RESULT = {
-  status: "TESTRESULT",
-} as const;
+  const TIMEOUT_TEST_RESULT = {
+    status: "TESTRESULT",
+  };
 
-let testTimeoutID: NodeJS.Timeout;
+  let testTimeoutID: NodeJS.Timeout;
 
-describe("timeout()", () => {
-  afterEach(() => {
-    clearTimeout(testTimeoutID);
-  });
-  test("Resolves argument if argument resolves before timeout", () => {
-    expect(timeout(getPromise("resolve", 1000), 2000)).resolves.toBe(
-      TIMEOUT_TEST_RESULT
-    );
-  });
-  test("Rejected argument if argument rejects before timeout", () => {
-    expect(timeout(getPromise("reject", 1000), 2000)).rejects.toBe(
-      TIMEOUT_TEST_RESULT
-    );
-  });
-  test("TimeoutRejection if argument resolves after timeout", () => {
-    expect(timeout(getPromise("resolve", 2000), 1000)).rejects.toBe({
-      status: "TIMEOUT",
+  describe("timeout()", () => {
+    afterEach(() => {
+      clearTimeout(testTimeoutID);
+    });
+    test("Resolves argument if argument resolves before timeout", () => {
+      expect(timeout(getPromise("resolve", 1000), 2000)).resolves.toBe(
+        TIMEOUT_TEST_RESULT
+      );
+    });
+    test("Rejected argument if argument rejects before timeout", () => {
+      expect(timeout(getPromise("reject", 1000), 2000)).rejects.toBe(
+        TIMEOUT_TEST_RESULT
+      );
+    });
+    test("TimeoutError if argument resolves after timeout", () => {
+      expect(timeout(getPromise("resolve", 2000), 1000)).rejects.toBeInstanceOf(
+        TimeoutError
+      );
+    });
+    test("TimeoutError if argument rejects after timeout", () => {
+      expect(timeout(getPromise("reject", 2000), 1000)).rejects.toBeInstanceOf(
+        TimeoutError
+      );
     });
   });
-  test("TimeoutRejection if argument rejects after timeout", () => {
-    expect(timeout(getPromise("reject", 2000), 1000)).rejects.toBe({
-      status: "TIMEOUT",
-    });
-  });
-});
 
-function getPromise(
-  method: "reject" | "resolve",
-  ms: number
-): Promise<typeof TIMEOUT_TEST_RESULT> {
-  return new Promise((resolve, reject) => {
-    const args = { resolve, reject };
-    testTimeoutID = setTimeout(() => args[method](TIMEOUT_TEST_RESULT), ms);
-  });
-}
+  function getPromise(
+    method: "reject" | "resolve",
+    ms: number
+  ): Promise<typeof TIMEOUT_TEST_RESULT> {
+    return new Promise((resolve, reject) => {
+      const args = { resolve, reject };
+      testTimeoutID = setTimeout(() => args[method](TIMEOUT_TEST_RESULT), ms);
+    });
+  }
+});
