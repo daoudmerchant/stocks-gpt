@@ -60,12 +60,8 @@ declare namespace Stock {
       ticker,
       from,
       to,
-    }: GetHistoryArguments): Promise<
-      StockHistoryResponse | typeof TIMEOUT_REJECTION
-    >;
-    search(
-      searchTerm: string
-    ): Promise<StockSearchResponse | typeof TIMEOUT_REJECTION>;
+    }: GetHistoryArguments): Promise<StockHistoryResponse | TimeoutError>;
+    search(searchTerm: string): Promise<StockSearchResponse | TimeoutError>;
   }
 }
 
@@ -89,15 +85,11 @@ declare namespace Database {
       ticker,
       type,
       string,
-    }: StockDatabaseArguments): Promise<
-      StockInsightsResponse | typeof TIMEOUT_REJECTION
-    >;
+    }: StockDatabaseArguments): Promise<StockInsightsResponse | TimeoutError>;
     saveStock({
       ticker,
       type,
       string,
-    }: StockDatabaseArguments): Promise<
-      typeof SUCCESS | typeof TIMEOUT_REJECTION
-    >;
+    }: StockDatabaseArguments): Promise<typeof SUCCESS | TimeoutError>;
   }
 }
