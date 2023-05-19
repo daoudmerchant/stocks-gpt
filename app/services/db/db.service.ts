@@ -25,18 +25,14 @@ export class DatabaseService extends Database.BaseDatabaseService {
     ticker,
     type,
     string,
-  }: Database.StockDatabaseArguments): Promise<
-    Database.StockInsightsResponse | TimeoutError
-  > {
+  }: Database.StockDatabaseArguments): Promise<Database.StockInsightsResponse> {
     throw new Error("Not implemented.");
   }
   saveStock({
     ticker,
     type,
     string,
-  }: Database.StockDatabaseArguments): Promise<
-    Database.Success | TimeoutError
-  > {
+  }: Database.StockDatabaseArguments): Promise<Database.Success> {
     throw new Error("Not implemented.");
   }
 }

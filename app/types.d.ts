@@ -1,5 +1,9 @@
-declare class TimeoutError extends Error {
-  status: "TIMEOUT";
+declare class TimeoutError implements Error {
+  message: "TIMEOUT";
+}
+
+declare class NotFoundError implements Error {
+  message: "NOT_FOUND";
 }
 
 declare namespace Stock {
@@ -60,8 +64,8 @@ declare namespace Stock {
       ticker,
       from,
       to,
-    }: GetHistoryArguments): Promise<StockHistoryResponse | TimeoutError>;
-    search(searchTerm: string): Promise<StockSearchResponse | TimeoutError>;
+    }: GetHistoryArguments): Promise<StockHistoryResponse>;
+    search(searchTerm: string): Promise<StockSearchResponse>;
   }
 }
 
@@ -85,11 +89,11 @@ declare namespace Database {
       ticker,
       type,
       string,
-    }: StockDatabaseArguments): Promise<StockInsightsResponse | TimeoutError>;
+    }: StockDatabaseArguments): Promise<StockInsightsResponse>;
     saveStock({
       ticker,
       type,
       string,
-    }: StockDatabaseArguments): Promise<Success | TimeoutError>;
+    }: StockDatabaseArguments): Promise<Success>;
   }
 }

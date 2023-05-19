@@ -1,10 +1,10 @@
 export const timeout = async <T>(
   promise: Promise<T>,
   ms: number
-): Promise<T | TimeoutError> => {
+): Promise<T> => {
   let timeoutID;
   try {
-    const result = Promise.race([
+    const result = await Promise.race([
       promise,
       new Promise((_, rej) => {
         timeoutID = setTimeout(() => rej(TimeoutError), ms);
@@ -14,9 +14,9 @@ export const timeout = async <T>(
     return result as T;
   } catch (e: unknown) {
     clearTimeout(timeoutID);
-    if (e instanceof TimeoutError) {
-      return e;
-    }
+    // if (e instanceof TimeoutError) { // TOTO handle differently?
+    //   throw e;
+    // }
     throw e;
   }
 };
