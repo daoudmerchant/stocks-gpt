@@ -1,7 +1,8 @@
 ```mermaid
 erDiagram
     LLM-RESPONSE {
-        string ticker
+        id ticker_id
+        string ticker_name
         string response
         ts timestamp
     }

@@ -1,5 +1,4 @@
 import pgPromise from "pg-promise";
-import { AppConfig } from "../config";
 import pg from "pg-promise/typescript/pg-subset";
 
 export const Database: pgPromise.IDatabase<{}, pg.IClient> = pgPromise({
@@ -12,4 +11,7 @@ export const Database: pgPromise.IDatabase<{}, pg.IClient> = pgPromise({
     const cp = e.client.connectionParameters;
     console.log("Disconnecting from database:", cp.database);
   },
-})(AppConfig.pgConfig);
+})({
+  connectionString: process.env.POSTGRES_URI,
+  query_timeout: 5000,
+});

@@ -97,3 +97,5 @@ declare namespace Database {
     }: StockDatabaseArguments): Promise<Success>;
   }
 }
+
+declare const seed = () => Promise<void>;
