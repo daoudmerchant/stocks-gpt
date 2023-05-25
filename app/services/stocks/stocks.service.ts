@@ -1,7 +1,6 @@
 /// <reference path="../../types.d.ts" />
 
-import { AppConfig } from "../../../app/config";
-import { isISO8601Date, timeout } from "../../utils";
+import { isISO8601Date, fetchWithTimeout } from "../../utils";
 
 export class StocksService implements Stock.BaseStocksService {
   async getHistory({
@@ -12,19 +11,13 @@ export class StocksService implements Stock.BaseStocksService {
     if ([from, to].some((dateString) => !isISO8601Date(dateString))) {
       throw new Error("Invalid date - must be YYYY-MM-DD");
     }
-    return timeout(
-      fetch(
-        `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${process.env.POLYGON_API_KEY}`
-      ).then((res) => res.json()),
-      AppConfig.timeout
-    );
+    return fetchWithTimeout(
+      `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${process.env.POLYGON_API_KEY}`
+    ).then((res) => res.json());
   }
   async search(searchTerm: string): Promise<Stock.StockSearchResponse> {
-    return timeout(
-      fetch(
-        `https://api.polygon.io/v3/reference/tickers?search=${searchTerm}&active=true&apiKey=${process.env.POLYGON_API_KEY}`
-      ).then((res) => res.json()),
-      AppConfig.timeout
-    );
+    return fetchWithTimeout(
+      `https://api.polygon.io/v3/reference/tickers?search=${searchTerm}&active=true&apiKey=${process.env.POLYGON_API_KEY}`
+    ).then((res) => res.json());
   }
 }

@@ -39,24 +39,24 @@ describe("Utils", () => {
       jest.useFakeTimers();
     });
     test("Resolves argument if argument resolves before timeout", () => {
-      expect(timeout(getPromise("resolve", 1000), 2000)).resolves.toBe(
+      expect(timeout(getPromise("resolve", 1000), { ms: 2000 })).resolves.toBe(
         TIMEOUT_TEST_RESULT
       );
     });
     test("Rejected argument if argument rejects before timeout", () => {
-      expect(timeout(getPromise("reject", 1000), 2000)).rejects.toBe(
+      expect(timeout(getPromise("reject", 1000), { ms: 2000 })).rejects.toBe(
         TIMEOUT_TEST_RESULT
       );
     });
     test("TimeoutError if argument resolves after timeout", () => {
-      expect(timeout(getPromise("resolve", 2000), 1000)).rejects.toThrowError(
-        TIMEOUT
-      );
+      expect(
+        timeout(getPromise("resolve", 2000), { ms: 1000 })
+      ).rejects.toThrowError(TIMEOUT);
     });
     test("TimeoutError if argument rejects after timeout", () => {
-      expect(timeout(getPromise("reject", 2000), 1000)).rejects.toThrowError(
-        TIMEOUT
-      );
+      expect(
+        timeout(getPromise("reject", 2000), { ms: 1000 })
+      ).rejects.toThrowError(TIMEOUT);
     });
     function getPromise(
       method: "reject" | "resolve",

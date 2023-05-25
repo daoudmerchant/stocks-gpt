@@ -1,3 +1,12 @@
+declare interface TimeoutArgumentsOptions {
+  ms?: number;
+  callbacks?: {
+    onResolve?: () => void;
+    onReject?: () => void;
+    onFinished?: () => void;
+  };
+}
+
 declare class TimeoutError implements Error {
   message: "TIMEOUT";
 }
@@ -76,25 +85,25 @@ declare namespace Database {
     timestamp: number;
   }
 
-  declare interface StockDatabaseArguments {
+  declare interface SaveStockArguments {
     ticker: string;
     type: "INSIGHTS"; // TODO add more!
     string: string;
   }
 
+  declare interface GetStockResponse {
+    ticker_id: number;
+    ticker_symbol: string;
+    ticker_name: string;
+    response_text: string;
+    timestamp: Date;
+  }
+
   declare type Success = { status: "SUCCESS" };
 
   declare class BaseDatabaseService {
-    getStock({
-      ticker,
-      type,
-      string,
-    }: StockDatabaseArguments): Promise<StockInsightsResponse>;
-    saveStock({
-      ticker,
-      type,
-      string,
-    }: StockDatabaseArguments): Promise<Success>;
+    getStock(ticker: string): Promise<StockInsightsResponse>;
+    saveStock({ ticker, type, string }: SaveStockArguments): Promise<Success>;
   }
 }
 

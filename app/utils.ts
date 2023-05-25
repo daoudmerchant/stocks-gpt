@@ -1,24 +1,41 @@
+import { AppConfig } from "./config";
+import { TimeoutError } from "./models/errors/TimeoutError.model";
+
 export const timeout = async <T>(
   promise: Promise<T>,
-  ms: number
+  options: TimeoutArgumentsOptions = { ms: AppConfig.timeout }
 ): Promise<T> => {
+  const { ms, callbacks } = options;
   let timeoutID;
   try {
     const result = await Promise.race([
       promise,
       new Promise((_, rej) => {
-        timeoutID = setTimeout(() => rej(TimeoutError), ms);
+        timeoutID = setTimeout(() => rej(new TimeoutError()), ms);
       }),
     ]);
-    clearTimeout(timeoutID);
+    callbacks?.onResolve?.();
     return result as T;
   } catch (e: unknown) {
-    clearTimeout(timeoutID);
     // if (e instanceof TimeoutError) { // TOTO handle differently?
     //   throw e;
     // }
+    callbacks?.onReject?.();
     throw e;
+  } finally {
+    clearTimeout(timeoutID);
+    callbacks?.onFinished?.();
   }
+};
+
+export const fetchWithTimeout = (
+  input: RequestInfo | URL,
+  init: RequestInit = {}
+): Promise<Response> => {
+  const abortController = new AbortController();
+  return timeout(fetch(input, { ...init, signal: abortController.signal }), {
+    callbacks: { onReject: () => abortController.abort() },
+  });
 };
 
 export const isISO8601Date = (dateString: string): boolean =>

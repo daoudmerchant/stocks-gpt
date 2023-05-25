@@ -1,6 +1,6 @@
 import { Database as db } from "./db.js";
 
-const SEED_DATA = [
+export const SEED_DATA = [
   {
     ticker_symbol: "AAPL",
     ticker_name: "Apple Inc.",
