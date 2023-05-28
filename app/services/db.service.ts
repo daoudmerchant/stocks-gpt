@@ -1,6 +1,5 @@
 import pgPromise from "pg-promise";
 import pg from "pg-promise/typescript/pg-subset";
-import db from "../db";
 
 /// <reference path="../types.d.ts" />
 
@@ -36,4 +35,4 @@ class DatabaseService implements Database.BaseDatabaseService {
   }
 }
 
-export default new DatabaseService(db);
+export default DatabaseService;
