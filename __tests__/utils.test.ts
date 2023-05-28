@@ -1,4 +1,11 @@
-import { beforeAll, describe, expect, jest, test } from "@jest/globals";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  jest,
+  test,
+} from "@jest/globals";
 import { isISO8601Date, timeout } from "../app/utils";
 import { TIMEOUT } from "../app/models/errors/TimeoutError.model";
 
@@ -37,6 +44,9 @@ describe("Utils", () => {
   describe("timeout()", () => {
     beforeAll(() => {
       jest.useFakeTimers();
+    });
+    afterAll(() => {
+      jest.useRealTimers();
     });
     test("Resolves argument if argument resolves before timeout", () => {
       expect(timeout(getPromise("resolve", 1000), { ms: 2000 })).resolves.toBe(

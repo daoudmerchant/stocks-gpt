@@ -79,10 +79,10 @@ declare namespace Stock {
 }
 
 declare namespace Database {
-  declare interface StockInsightsResponse {
-    ticker: string;
-    string: string;
-    timestamp: number;
+  declare interface InitialData {
+    ticker_symbol: string;
+    ticker_name: string;
+    llm_insights: string;
   }
 
   declare interface SaveStockArguments {
@@ -95,7 +95,7 @@ declare namespace Database {
     ticker_id: number;
     ticker_symbol: string;
     ticker_name: string;
-    response_text: string;
+    llm_insights: string;
     timestamp: Date;
   }
 

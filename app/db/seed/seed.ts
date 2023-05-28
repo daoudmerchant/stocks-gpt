@@ -1,20 +1,13 @@
-import { Database as db } from "./db.js";
-
-export const SEED_DATA = [
-  {
-    ticker_symbol: "AAPL",
-    ticker_name: "Apple Inc.",
-    response_text: "This is a test.",
-  },
-];
+import { Database as db } from "../db.js";
+import INITIAL_DATA from "./initial_data.js";
 
 const seed = async (): Promise<void> => {
   // drop existing
-  console.log("Dropping existing table LLM_response.");
+  console.log("Dropping existing LLM_response table.");
   await db.any(`
-    DROP TABLE IF EXISTS LLM_response;
+    DROP TABLE LLM_response;
   `);
-  console.log("Existing table LLM_response dropped.");
+  console.log("Existing LLM_response table dropped.");
 
   // create new
   console.log("Creating new table LLM_response.");
@@ -23,16 +16,16 @@ const seed = async (): Promise<void> => {
       ticker_id serial PRIMARY KEY,
       ticker_symbol VARCHAR ( 4 ) UNIQUE NOT NULL,
       ticker_name TEXT UNIQUE NOT NULL,
-      response_text TEXT UNIQUE NOT NULL,
+      llm_insights TEXT UNIQUE NOT NULL,
       timestamp TIMESTAMP NOT NULL DEFAULT NOW()
     );
     INSERT INTO LLM_response (
       ticker_symbol,
       ticker_name,
-      response_text
-    ) VALUES ${SEED_DATA.map(
-      ({ ticker_symbol, ticker_name, response_text }) =>
-        `('${ticker_symbol}', '${ticker_name}', '${response_text}')`
+      llm_insights
+    ) VALUES ${INITIAL_DATA.map(
+      ({ ticker_symbol, ticker_name, llm_insights }) =>
+        `('${ticker_symbol}', '${ticker_name}', '${llm_insights}')`
     ).join(" ")}
   `);
   console.log("New table LLM_response created.");
@@ -43,3 +36,4 @@ const seed = async (): Promise<void> => {
 };
 
 seed();
+export { INITIAL_DATA };

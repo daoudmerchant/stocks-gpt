@@ -1,5 +1,12 @@
 import { AppConfig } from "./config";
 import { TimeoutError } from "./models/errors/TimeoutError.model";
+import { loadEnvConfig } from "@next/env";
+
+export const loadTestEnvVariables = (): void => {
+  // TODO remove before deployment
+  const projectDir = process.cwd();
+  loadEnvConfig(projectDir);
+};
 
 export const timeout = async <T>(
   promise: Promise<T>,
