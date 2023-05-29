@@ -1,5 +1,5 @@
 import db from "../index.js";
-import { SEED_STRING } from "./initial_data.js";
+import { getSeedString } from "./utils.js";
 
 const seed = async (): Promise<void> => {
   // drop existing
@@ -11,7 +11,7 @@ const seed = async (): Promise<void> => {
 
   // create new
   console.log("Creating new table LLM_response.");
-  await db.any(SEED_STRING);
+  await db.any(getSeedString());
   console.log("New table LLM_response created.");
 
   // disconnect
