@@ -1,8 +1,13 @@
-import INITIAL_DATA from "./initial_data";
+export const INITIAL_DATA = [
+  {
+    ticker_symbol: "AAPL",
+    ticker_name: "Apple Inc.",
+    llm_insights: "This is a test.",
+  },
+];
 
-export const getSeedString = (
-  stockArray: Database.InitialData[] = INITIAL_DATA
-) => `
+// TODO Fix type declaration unrecognised with ts-node
+export const getSeedString = (stockArray = INITIAL_DATA) => `
 CREATE TABLE LLM_response (
   ticker_id serial PRIMARY KEY,
   ticker_symbol VARCHAR ( 4 ) UNIQUE NOT NULL,

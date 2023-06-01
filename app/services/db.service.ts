@@ -9,29 +9,43 @@ class DatabaseService implements Database.BaseDatabaseService {
   constructor(db: pgPromise.IDatabase<{}, pg.IClient>) {
     this.db = db;
   }
-  async getStock(ticker: string): Promise<Database.GetStockResponse[]> {
-    try {
-      // TODO Wrap in timeout call?
-      const rows = (await this.db.any(`
-        SELECT * FROM LLM_response WHERE ticker_symbol = '${ticker}';
+  async getStock(tickerSymbol: string): Promise<Database.GetStockResponse[]> {
+    // TODO Wrap in timeout call?
+    const rows = (await this.db.any(`
+        SELECT * FROM LLM_response WHERE ticker_symbol = '${tickerSymbol}';
       `)) as Database.GetStockResponse[];
-      if (rows.length > 1) {
-        throw new DuplicateTickerError();
-      }
-      return rows;
-    } catch (e) {
-      console.log(e); // TODO Handle
-    } finally {
-      this.db.$pool.end();
+    if (rows.length > 1) {
+      throw new DuplicateTickerError();
     }
-    throw new Error("Not implemented");
+    return rows;
   }
   async saveStock({
-    ticker,
-    type,
-    string,
+    // TODO unify Database.GetStockResponse and Database.SaveStockArguments
+    tickerSymbol,
+    tickerName,
+    llmString,
   }: Database.SaveStockArguments): Promise<Database.Success> {
-    throw new Error("Not implemented.");
+    const rows = await this.db.any(`
+        INSERT INTO LLM_response
+        (
+          ticker_symbol,
+          ticker_name,
+          llm_insights
+        ) VALUES (
+          '${tickerSymbol}',
+          '${tickerName}',
+          '${llmString}'
+        )
+        ON CONFLICT (ticker_symbol) DO UPDATE
+        SET
+          llm_insights = excluded.llm_insights,
+          timestamp = NOW();
+      `);
+    console.log(rows);
+    return { status: "SUCCESS" };
+  }
+  public endConnectionPool(): void {
+    this.db.$pool.end();
   }
 }
 

@@ -86,9 +86,9 @@ declare namespace Database {
   }
 
   declare interface SaveStockArguments {
-    ticker: string;
-    type: "INSIGHTS"; // TODO add more!
-    string: string;
+    tickerSymbol: string;
+    tickerName: string;
+    llmString: string;
   }
 
   declare interface GetStockResponse {
@@ -103,7 +103,11 @@ declare namespace Database {
 
   declare class BaseDatabaseService {
     getStock(ticker: string): Promise<StockInsightsResponse>;
-    saveStock({ ticker, type, string }: SaveStockArguments): Promise<Success>;
+    saveStock({
+      tickerSymbol,
+      tickerName,
+      llmString,
+    }: SaveStockArguments): Promise<Success>;
   }
 }
 

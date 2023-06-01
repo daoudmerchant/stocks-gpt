@@ -1,8 +1,14 @@
-import { beforeEach, describe, expect, jest, test } from "@jest/globals";
-import DatabaseService from "../app/services/db.service";
-import { getSeedString } from "../app/db/seed/utils";
-import INITIAL_DATA from "../app/db/seed/initial_data";
+import {
+  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  jest,
+  test,
+} from "@jest/globals";
 import db from "../app/db";
+import DatabaseService from "../app/services/db.service";
+import { getSeedString, INITIAL_DATA } from "../app/db/seed/seed_data";
 import { IMemoryDb, newDb } from "pg-mem";
 
 let mDb: IMemoryDb;
@@ -27,6 +33,9 @@ describe("Database Service", () => {
   beforeEach(() => {
     mDb = newDb();
   });
+  afterAll(() => {
+    dbService.endConnectionPool();
+  });
   describe("getStock()", () => {
     test("Gets a stock", async () => {
       seedMock();
@@ -43,10 +52,66 @@ describe("Database Service", () => {
       ).forEach((key) => {
         expect(APPLE_STOCK_DATA[key]).toBe(RESPONSE_DATA[key]);
       });
+      expect(RESPONSE_DATA.timestamp).toBeInstanceOf(Date);
     });
     test("Returns empty array if no stock found", () => {
       seedMock();
-      expect(dbService.getStock("Oops")).resolves.toHaveLength(0);
+      return expect(dbService.getStock("Oops")).resolves.toHaveLength(0);
+    });
+    test("Adds a new stock", async () => {
+      seedMock();
+      const before = (
+        await dbService.getStock(APPLE_STOCK_DATA.ticker_symbol)
+      )[0].timestamp;
+
+      const NEW_STOCK = {
+        tickerSymbol: "AMZN",
+        tickerName: "Amazon.com Inc.",
+        llmString: "Amazon is a big company I guess.",
+      };
+      const result = await dbService.saveStock(NEW_STOCK);
+
+      expect(result.status).toBe("SUCCESS");
+
+      const [saved] = await dbService.getStock(NEW_STOCK.tickerSymbol);
+
+      expect(saved.ticker_symbol).toBe(NEW_STOCK.tickerSymbol);
+      expect(saved.ticker_name).toBe(NEW_STOCK.tickerName);
+      expect(saved.llm_insights).toBe(NEW_STOCK.llmString);
+      expect(saved.timestamp.getTime()).toBeGreaterThan(before.getTime());
+    });
+    test("Updates a stock if already existing", async () => {
+      seedMock();
+      const before = (
+        await dbService.getStock(APPLE_STOCK_DATA.ticker_symbol)
+      )[0].timestamp;
+
+      const APPLE_UPDATE = {
+        tickerSymbol: APPLE_STOCK_DATA.ticker_symbol,
+        tickerName: APPLE_STOCK_DATA.ticker_name,
+        llmString: "Apple is a very big company and you should buy its stock.",
+      };
+      const result = await dbService.saveStock(APPLE_UPDATE);
+
+      expect(result.status).toBe("SUCCESS");
+
+      const [saved] = await dbService.getStock(APPLE_STOCK_DATA.ticker_symbol);
+
+      expect(saved.ticker_symbol).toBe(APPLE_STOCK_DATA.ticker_symbol);
+      expect(saved.llm_insights).toBe(APPLE_UPDATE.llmString);
+      expect(saved.timestamp.getTime()).toBeGreaterThan(before.getTime());
+    });
+    test("Ignores new stock name if tock symbol already existing", async () => {
+      seedMock();
+      await dbService.saveStock({
+        tickerSymbol: APPLE_STOCK_DATA.ticker_symbol,
+        tickerName: "Apple, The Really Big Company",
+        llmString: "Apple is a very big company and you should buy its stock.",
+      });
+
+      const [saved] = await dbService.getStock(APPLE_STOCK_DATA.ticker_symbol);
+
+      expect(saved.ticker_name).toBe(APPLE_STOCK_DATA.ticker_name);
     });
   });
 });

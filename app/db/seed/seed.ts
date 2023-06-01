@@ -1,5 +1,5 @@
 import db from "../index.js";
-import { getSeedString } from "./utils.js";
+import { getSeedString } from "./seed_data.js";
 
 const seed = async (): Promise<void> => {
   // drop existing
