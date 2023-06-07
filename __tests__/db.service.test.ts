@@ -17,6 +17,16 @@ const seedMock = (stocksArray?: Database.InitialData[]): void => {
   mDb.public.many(getSeedString(stocksArray));
 };
 
+const getDateAtDaysFromToday = (days: number): Date => {
+  const today = new Date();
+  const date = new Date();
+  date.setDate(today.getDate() + days);
+  return date;
+};
+
+const YESTERDAY = getDateAtDaysFromToday(-1);
+const TOMORROW = getDateAtDaysFromToday(1);
+
 jest.mock("../app/db", () => {
   return {
     any: jest.fn((query: string) => mDb.public.many(query)),
@@ -59,10 +69,9 @@ describe("Database Service", () => {
       return expect(dbService.getStock("Oops")).resolves.toHaveLength(0);
     });
     test("Adds a new stock", async () => {
+      jest.useFakeTimers().setSystemTime(YESTERDAY);
       seedMock();
-      const before = (
-        await dbService.getStock(APPLE_STOCK_DATA.ticker_symbol)
-      )[0].timestamp;
+      jest.setSystemTime(TOMORROW);
 
       const NEW_STOCK = {
         tickerSymbol: "AMZN",
@@ -78,13 +87,19 @@ describe("Database Service", () => {
       expect(saved.ticker_symbol).toBe(NEW_STOCK.tickerSymbol);
       expect(saved.ticker_name).toBe(NEW_STOCK.tickerName);
       expect(saved.llm_insights).toBe(NEW_STOCK.llmString);
-      expect(saved.timestamp.getTime()).toBeGreaterThan(before.getTime());
+      expect(saved.timestamp).toStrictEqual(TOMORROW);
+
+      jest.useRealTimers();
     });
     test("Updates a stock if already existing", async () => {
+      jest.useFakeTimers().setSystemTime(YESTERDAY);
       seedMock();
-      const before = (
-        await dbService.getStock(APPLE_STOCK_DATA.ticker_symbol)
-      )[0].timestamp;
+
+      expect(
+        (await dbService.getStock(APPLE_STOCK_DATA.ticker_symbol))[0].timestamp
+      ).toStrictEqual(YESTERDAY);
+
+      jest.setSystemTime(TOMORROW);
 
       const APPLE_UPDATE = {
         tickerSymbol: APPLE_STOCK_DATA.ticker_symbol,
@@ -99,13 +114,15 @@ describe("Database Service", () => {
 
       expect(saved.ticker_symbol).toBe(APPLE_STOCK_DATA.ticker_symbol);
       expect(saved.llm_insights).toBe(APPLE_UPDATE.llmString);
-      expect(saved.timestamp.getTime()).toBeGreaterThan(before.getTime());
+      expect(saved.timestamp).toStrictEqual(TOMORROW);
+
+      jest.useRealTimers();
     });
-    test("Ignores new stock name if tock symbol already existing", async () => {
+    test("Ignores new stock name if stock symbol already existing", async () => {
       seedMock();
       await dbService.saveStock({
         tickerSymbol: APPLE_STOCK_DATA.ticker_symbol,
-        tickerName: "Apple, The Really Big Company",
+        tickerName: "I WANT THIS TO BE IGNORED AND NOT SAVED TO DB",
         llmString: "Apple is a very big company and you should buy its stock.",
       });
 
